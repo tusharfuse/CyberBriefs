@@ -2,3 +2,10 @@ feedparser
 requests
 beautifulsoup4
 lxml
+openai
+python-dotenv
+apscheduler
+fastapi
+uvicorn
+python-multipart
+pip install pillow
