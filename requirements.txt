@@ -1,11 +1,19 @@
+fastapi
+uvicorn[standard]
+gunicorn
+
 feedparser
-requests
 beautifulsoup4
 lxml
-openai
+requests
 python-dotenv
+
 apscheduler
-fastapi
-uvicorn
+
+python-jose
+passlib[bcrypt]
+bcrypt
+
+openai
+
 python-multipart
-pip install pillow

@@ -1,0 +1,19 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual env
+venv/
+
+# Environment variables
+.env
+
+# Node / frontend
+cyberbriefs-admin/
+node_modules/
+package-lock.json
+
+# Archives
+*.rar
+*.zip
+
