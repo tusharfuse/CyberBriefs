@@ -59,16 +59,12 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 # GLOBAL CONFIG
 # =========================================================
 DB_NAME = "news.db"
+IMAGE_BASE_DIR = "images"
 for folder in ["ai", "cyber", "vikram", "y2ai"]:
     os.makedirs(os.path.join(IMAGE_BASE_DIR, folder), exist_ok=True)
-IMAGE_BASE_DIR = "images"
+
 SCHEDULER_INTERVAL_SECONDS = 15 * 60
 
-os.makedirs(f"{IMAGE_BASE_DIR}/ai", exist_ok=True)
-os.makedirs(f"{IMAGE_BASE_DIR}/cyber", exist_ok=True)
-
-os.makedirs(f"{IMAGE_BASE_DIR}/vikram", exist_ok=True)
-os.makedirs(f"{IMAGE_BASE_DIR}/y2ai", exist_ok=True)
 
 pipeline_lock = Lock()
 scheduler = BackgroundScheduler()
