@@ -59,6 +59,8 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 # GLOBAL CONFIG
 # =========================================================
 DB_NAME = "news.db"
+for folder in ["ai", "cyber", "vikram", "y2ai"]:
+    os.makedirs(os.path.join(IMAGE_BASE_DIR, folder), exist_ok=True)
 IMAGE_BASE_DIR = "images"
 SCHEDULER_INTERVAL_SECONDS = 15 * 60
 
@@ -761,13 +763,13 @@ Article:
 
 import random
 
-
 def get_fallback_image(category: str) -> str | None:
     folder = f"{IMAGE_BASE_DIR}/{category}"
     fallbacks = [f for f in os.listdir(folder) if f.startswith("fallback_")]
     if not fallbacks:
         return None
-    return os.path.join(folder, random.choice(fallbacks))
+    return f"/images/{category}/{random.choice(fallbacks)}"
+
 
 
 # =========================================================
@@ -862,6 +864,7 @@ Summary (for inspiration only):
                         f"UPDATE {table} SET image_path=? WHERE id=?",
                         (fallback, article_id),
                     )
+
                     conn.commit()
                     print(f"🟡 {label} fallback image assigned for ID {article_id}")
 
@@ -1403,9 +1406,8 @@ def process_body_images(
                 with open(disk_path, "wb") as f:
                     f.write(image_bytes)
 
-                img["src"] = (
-                    f"{PUBLIC_BASE_URL}/images/{base_folder}/{blog_id}/{filename}"
-                )
+                img["src"] = f"/images/{base_folder}/{blog_id}/{filename}"
+
 
             except Exception as e:
                 print(f"❌ Failed image {idx}: {e}")
