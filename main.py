@@ -1366,16 +1366,17 @@ import uuid
 import base64
 from bs4 import BeautifulSoup
 
-
 def process_body_images(
-    body_html: str, blog_id: int, base_folder: str = "vikram") -> str:
+    body_html: str, blog_id: int, base_folder: str = "vikram"
+) -> str:
     print(f"🔄 Processing body images for {base_folder}/{blog_id}")
     soup = BeautifulSoup(body_html, "html.parser")
 
     image_dir = f"{IMAGE_BASE_DIR}/{base_folder}/{blog_id}"
-    # Check if image_dir exists as a file (from cover image) and remove it
+
     if os.path.isfile(image_dir):
         os.remove(image_dir)
+
     os.makedirs(image_dir, exist_ok=True)
 
     img_tags = soup.find_all("img")
@@ -1383,7 +1384,6 @@ def process_body_images(
 
     for idx, img in enumerate(img_tags, start=1):
         src = img.get("src", "")
-        print(f"🖼️  Processing img {idx}: src starts with {src[:50]}...")
 
         if src.startswith("data:image"):
             try:
@@ -1398,17 +1398,15 @@ def process_body_images(
                 with open(disk_path, "wb") as f:
                     f.write(image_bytes)
 
-                img["src"] = f"http://127.0.0.1:8000/images/{base_folder}/{blog_id}/{filename}"
-                print(f"✅ Processed img {idx} to {img['src']}")
+                img["src"] = (
+                    f"{PUBLIC_BASE_URL}/images/{base_folder}/{blog_id}/{filename}"
+                )
 
             except Exception as e:
-                print(f"❌ Failed processing body image {idx}: {e}")
-                # Remove the img tag if processing fails to avoid broken data:image
+                print(f"❌ Failed image {idx}: {e}")
                 img.decompose()
 
-    processed_body = str(soup)
-    print(f"🔄 Body processing complete for {base_folder}/{blog_id}")
-    return processed_body
+    return str(soup)
 
 @app.post("/cyberbriefs/news/blogs/vikram", tags=["Vikram Blogs"])
 def create_vikram_blog(
