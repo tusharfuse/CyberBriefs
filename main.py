@@ -51,6 +51,7 @@ class LimitUploadSizeMiddleware(BaseHTTPMiddleware):
 # ENV + OPENAI
 # =========================================================
 load_dotenv()
+PUBLIC_BASE_URL = os.environ["PUBLIC_BASE_URL"] 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 
