@@ -829,13 +829,17 @@ Summary (for inspiration only):
             image_response = requests.get(image_url, timeout=60)
             image_response.raise_for_status()
 
-            path = f"{IMAGE_BASE_DIR}/{category}/{article_id}.png"
-            with open(path, "wb") as f:
+            disk_path = f"{IMAGE_BASE_DIR}/{category}/{article_id}.png"
+            url_path  = f"/images/{category}/{article_id}.png"
+
+            with open(disk_path, "wb") as f:
                 f.write(image_response.content)
 
             cur.execute(
-                f"UPDATE {table} SET image_path=? WHERE id=?", (path, article_id)
+                f"UPDATE {table} SET image_path=? WHERE id=?",
+                (url_path, article_id),
             )
+
             conn.commit()
 
             completed += 1
@@ -1024,12 +1028,6 @@ def heal_cyber_pipeline():
 
     finally:
         pipeline_lock.release()
-
-
-def normalize_image_path(path: str) -> str:
-    if not path:
-        return path
-    return path if path.startswith("/") else f"/{path}"
 
 
 @app.get("/cyberbriefs/cyber/channels", tags=["Channels+Images"])
