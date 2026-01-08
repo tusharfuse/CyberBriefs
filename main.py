@@ -1026,6 +1026,12 @@ def heal_cyber_pipeline():
         pipeline_lock.release()
 
 
+def normalize_image_path(path: str) -> str:
+    if not path:
+        return path
+    return path if path.startswith("/") else f"/{path}"
+
+
 @app.get("/cyberbriefs/cyber/channels", tags=["Channels+Images"])
 def get_channels():
     conn = get_conn()
@@ -1047,7 +1053,14 @@ def get_channels():
     rows = cur.fetchall()
     conn.close()
 
-    return [{"channel": row["channel"], "image": row["image_path"]} for row in rows]
+    return [
+    {
+        "channel": row["channel"],
+        "image": normalize_image_path(row["image_path"]),
+    }
+    for row in rows
+]
+
 
 
 @app.get("/cyberbriefs/news/cyber/channel/{channel_name}", tags=["Selected Channel News"])
@@ -1077,7 +1090,7 @@ def get_news_by_channel(channel_name: str):
             "id": row["id"],
             "headline": row["headline"],
             "summary": row["summary"],
-            "image": row["image_path"],
+            "image": normalize_image_path(row["image_path"]),
             "published_time": row["published_time"],
         }
         for row in rows
@@ -1122,7 +1135,7 @@ def get_all_cyber_news():
             "channel": row["channel"],
             "headline": row["headline"],
             "summary": row["summary"],
-            "image": row["image_path"],
+            "image": normalize_image_path(row["image_path"]),
             "published_time": row["published_time"],
         }
         for row in rows
@@ -1149,7 +1162,20 @@ def get_news_detail(news_id: int):
     if not row:
         return {"error": "News not found"}
 
-    return dict(row)
+    return [
+        {
+            "id": row["id"],
+            "channel": row["channel"],
+            "headline": row["headline"],
+            "body": row["body"],
+            "summary": row["summary"],
+            "image": normalize_image_path(row["image_path"]),
+            "published_time": row["published_time"],
+            "article_link": row["article_link"],
+            "fetched_at": row["fetched_at"],
+        }
+        
+    ]
 
 
 ###Function to check headline 1 exists or not###
