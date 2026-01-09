@@ -51,7 +51,11 @@ class LimitUploadSizeMiddleware(BaseHTTPMiddleware):
 # ENV + OPENAI
 # =========================================================
 load_dotenv()
-PUBLIC_BASE_URL = os.environ["PUBLIC_BASE_URL"] 
+BASE_URL = os.getenv(
+    "BASE_URL",
+    "http://localhost:8000"  # dev default
+)
+
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 
@@ -1050,7 +1054,14 @@ def get_channels():
     rows = cur.fetchall()
     conn.close()
 
-    return [{"channel": row["channel"], "image": row["image_path"]} for row in rows]
+    return [
+    {
+        "channel": row["channel"],
+        "image": full_image_url(row["image_path"]),
+    }
+    for row in rows
+]
+
 
 
 @app.get("/cyberbriefs/news/cyber/channel/{channel_name}", tags=["Selected Channel News"])
@@ -1076,15 +1087,16 @@ def get_news_by_channel(channel_name: str):
     conn.close()
 
     return [
-        {
-            "id": row["id"],
-            "headline": row["headline"],
-            "summary": row["summary"],
-            "image": row["image_path"],
-            "published_time": row["published_time"],
-        }
-        for row in rows
-    ]
+    {
+        "id": row["id"],
+        "headline": row["headline"],
+        "summary": row["summary"],
+        "image": full_image_url(row["image_path"]),
+        "published_time": row["published_time"],
+    }
+    for row in rows
+]
+
 
 
 ### Recent News endpoint ###
@@ -1120,16 +1132,17 @@ def get_all_cyber_news():
     conn.close()
 
     return [
-        {
-            "id": row["id"],
-            "channel": row["channel"],
-            "headline": row["headline"],
-            "summary": row["summary"],
-            "image": row["image_path"],
-            "published_time": row["published_time"],
-        }
-        for row in rows
-    ]
+    {
+        "id": row["id"],
+        "channel": row["channel"],
+        "headline": row["headline"],
+        "summary": row["summary"],
+        "image": full_image_url(row["image_path"]),
+        "published_time": row["published_time"],
+    }
+    for row in rows
+]
+
 
 
 @app.get("/cyberbriefs/news/cyber/{news_id}", tags=["Whole News Detail with id"])
@@ -1152,7 +1165,18 @@ def get_news_detail(news_id: int):
     if not row:
         return {"error": "News not found"}
 
-    return dict(row)
+    return {
+    "id": row["id"],
+    "channel": row["channel"],
+    "headline": row["headline"],
+    "body": row["body"],
+    "summary": row["summary"],
+    "image": full_image_url(row["image_path"]),
+    "published_time": row["published_time"],
+    "article_link": row["article_link"],
+    "fetched_at": row["fetched_at"],
+}
+
 
 
 ###Function to check headline 1 exists or not###
@@ -1369,6 +1393,13 @@ import re
 import uuid
 import base64
 from bs4 import BeautifulSoup
+def full_image_url(path: str | None) -> str | None:
+    if not path:
+        return None
+    if path.startswith("http"):
+        return path
+    return f"{BASE_URL}{path}"
+
 
 def process_body_images(
     body_html: str, blog_id: int, base_folder: str = "vikram"
@@ -1482,13 +1513,14 @@ def create_vikram_blog(
     conn.close()
 
     return {
-        "id": blog_id,
-        "headline": headline,
-        "body": processed_body,
-        "image_path": cover_image_url,
-        "published_time": published_time,
-        "original_link": original_link,
-    }
+    "id": blog_id,
+    "headline": headline,
+    "body": processed_body,
+    "image_path": full_image_url(cover_image_url),
+    "published_time": published_time,
+    "original_link": original_link,
+}
+
 
 @app.get("/cyberbriefs/news/blogs/vikram", tags=["Vikram Blogs"])
 def list_vikram_blogs():
@@ -1511,16 +1543,17 @@ def list_vikram_blogs():
     conn.close()
 
     return [
-        {
-            "id": row["id"],
-            "headline": row["headline"],
-            "body": row["body"],
-            "image_path": row["image_path"],
-            "author": row["author"] or "Dr. Vikram Sethi",
-            "published_time": row["published_time"],
-        }
-        for row in rows
-    ]
+    {
+        "id": row["id"],
+        "headline": row["headline"],
+        "body": row["body"],
+        "image_path": full_image_url(row["image_path"]),
+        "author": row["author"] or "Dr. Vikram Sethi",
+        "published_time": row["published_time"],
+    }
+    for row in rows
+]
+
 @app.get("/cyberbriefs/news/blogs/vikram/{id}", tags=["Vikram Blogs"])
 def get_vikram_blog(id: int):
     conn = get_conn()
@@ -1550,7 +1583,7 @@ def get_vikram_blog(id: int):
         "id": row["id"],
         "headline": row["headline"],
         "body": row["body"],
-        "image_path": row["image_path"],
+        "image_path": full_image_url(row["image_path"]),
         "author": row["author"] or "Dr. Vikram Sethi",
         "published_time": row["published_time"],
         "original_link": row["original_link"],
@@ -1760,13 +1793,14 @@ def create_y2ai_newsletter(
     conn.close()
 
     return {
-        "id": newsletter_id,
-        "headline": headline,
-        "body": processed_body,
-        "image_path": cover_image_url,
-        "published_time": published_time,
-        "original_link": original_link,
-    }
+    "id": newsletter_id,
+    "headline": headline,
+    "body": processed_body,
+    "image_path": full_image_url(cover_image_url),
+    "published_time": published_time,
+    "original_link": original_link,
+}
+
 
 
 @app.get("/cyberbriefs/newsletter/y2ai", tags=["Y2AI Newsletter"])
@@ -1786,15 +1820,16 @@ def list_y2ai_newsletters():
     conn.close()
 
     return [
-        {
-            "id": row["id"],
-            "headline": row["headline"],
-            "body": row["body"],
-            "image": row["image_path"],
-            "published_time": row["published_time"],
-        }
-        for row in rows
-    ]
+    {
+        "id": row["id"],
+        "headline": row["headline"],
+        "body": row["body"],
+        "image": full_image_url(row["image_path"]),
+        "published_time": row["published_time"],
+    }
+    for row in rows
+]
+
 
 
 @app.get("/cyberbriefs/newsletter/y2ai/{newsletter_id}", tags=["Y2AI Newsletter"])
@@ -1817,7 +1852,16 @@ def get_y2ai_newsletter(newsletter_id: int):
     if not row:
         return {"error": "Newsletter not found"}
 
-    return dict(row)
+    return {
+    "id": row["id"],
+    "headline": row["headline"],
+    "body": row["body"],
+    "image_path": full_image_url(row["image_path"]),
+    "published_time": row["published_time"],
+    "original_link": row["original_link"],
+    "author": row["author"],
+    "created_at": row["created_at"],
+}
 
 @app.put("/cyberbriefs/newsletter/y2ai/{id}", tags=["Y2AI Newsletter"])
 def update_y2ai_newsletter(
