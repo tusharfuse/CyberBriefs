@@ -926,7 +926,7 @@ def incremental_pipeline():
 # =========================================================
 
 
-@app.post("/cyberbriefs/images/generate/ai", tags=["Images"])
+@app.post("/images/generate/ai", tags=["Images"])
 def generate_ai_images():
     """
     Generate images for AI news where summary exists but image is missing
@@ -935,7 +935,7 @@ def generate_ai_images():
     return {"status": "success", "message": "AI image generation triggered"}
 
 
-@app.post("/cyberbriefs/images/generate/cyber", tags=["Images"])
+@app.post("/images/generate/cyber", tags=["Images"])
 def generate_cyber_images():
     """
     Generate images for Cyber news where summary exists but image is missing
@@ -964,7 +964,7 @@ def count_missing(category: str):
     return {"missing_summary": row[0] or 0, "missing_image": row[1] or 0}
 
 
-@app.get("/cyberbriefs/news/cyber/headline", tags=["AI Headline"])
+@app.get("/news/cyber/headline", tags=["AI Headline"])
 def get_ai_headline(request: Request):
     conn = get_conn()
     cur = conn.cursor()
@@ -992,7 +992,7 @@ def get_ai_headline(request: Request):
 
 
 
-@app.post("/cyberbriefs/pipeline/heal/cyber", tags=["Pipeline"])
+@app.post("/pipeline/heal/cyber", tags=["Pipeline"])
 def heal_cyber_pipeline():
     """
     Heal pipeline by generating missing summaries and images
@@ -1033,7 +1033,7 @@ def heal_cyber_pipeline():
         pipeline_lock.release()
 
 
-@app.get("/cyberbriefs/cyber/channels", tags=["Channels+Images"])
+@app.get("/cyber/channels", tags=["Channels+Images"])
 def get_channels():
     conn = get_conn()
     cur = conn.cursor()
@@ -1064,7 +1064,7 @@ def get_channels():
 
 
 
-@app.get("/cyberbriefs/news/cyber/channel/{channel_name}", tags=["Selected Channel News"])
+@app.get("/news/cyber/channel/{channel_name}", tags=["Selected Channel News"])
 def get_news_by_channel(channel_name: str):
     conn = get_conn()
     cur = conn.cursor()
@@ -1100,7 +1100,7 @@ def get_news_by_channel(channel_name: str):
 
 
 ### Recent News endpoint ###
-@app.get("/cyberbriefs/news/cyber/recent", tags=["Recent Cyber News"])
+@app.get("/news/cyber/recent", tags=["Recent Cyber News"])
 def get_all_cyber_news():
     """
     Fetch all Cyber news ordered from most recent to least recent.
@@ -1145,7 +1145,7 @@ def get_all_cyber_news():
 
 
 
-@app.get("/cyberbriefs/news/cyber/{news_id}", tags=["Whole News Detail with id"])
+@app.get("/news/cyber/{news_id}", tags=["Whole News Detail with id"])
 def get_news_detail(news_id: int):
     conn = get_conn()
     cur = conn.cursor()
@@ -1265,7 +1265,7 @@ Recent news:
     next_headline_run = datetime.now() + timedelta(seconds=HEADLINE_INTERVAL_SECONDS)
 
 
-@app.get("/cyberbriefs/social-links", tags=["Social Media"])
+@app.get("/social-links", tags=["Social Media"])
 def get_social_links():
     """
     Public endpoint – fetch social media links
@@ -1282,7 +1282,7 @@ def get_social_links():
     return dict(row) if row else {}
 
 
-@app.post("/cyberbriefs/social-links", tags=["Social Media"])
+@app.post("/social-links", tags=["Social Media"])
 def create_social_links(
     data: SocialLinksCreate,
 ):
@@ -1312,7 +1312,7 @@ def create_social_links(
     }
 
 
-@app.put("/cyberbriefs/social-links", tags=["Social Media"])
+@app.put("/social-links", tags=["Social Media"])
 def update_social_links(
     data: SocialLinksUpdate,
 ):
@@ -1354,7 +1354,7 @@ def update_social_links(
     }
 
 
-@app.delete("/cyberbriefs/social-links", tags=["Social Media"])
+@app.delete("/social-links", tags=["Social Media"])
 def delete_social_links():
     conn = get_conn()
     cur = conn.cursor()
@@ -1442,7 +1442,7 @@ def process_body_images(
 
     return str(soup)
 
-@app.post("/cyberbriefs/news/blogs/vikram", tags=["Vikram Blogs"])
+@app.post("/news/blogs/vikram", tags=["Vikram Blogs"])
 def create_vikram_blog(
     headline: str = Form(...),
     body: str = Form(...),
@@ -1522,7 +1522,7 @@ def create_vikram_blog(
 }
 
 
-@app.get("/cyberbriefs/news/blogs/vikram", tags=["Vikram Blogs"])
+@app.get("/news/blogs/vikram", tags=["Vikram Blogs"])
 def list_vikram_blogs():
     conn = get_conn()
     cur = conn.cursor()
@@ -1554,7 +1554,7 @@ def list_vikram_blogs():
     for row in rows
 ]
 
-@app.get("/cyberbriefs/news/blogs/vikram/{id}", tags=["Vikram Blogs"])
+@app.get("/news/blogs/vikram/{id}", tags=["Vikram Blogs"])
 def get_vikram_blog(id: int):
     conn = get_conn()
     cur = conn.cursor()
@@ -1592,7 +1592,7 @@ def get_vikram_blog(id: int):
 
 from typing import Optional
 from fastapi import Form, UploadFile, File
-@app.put("/cyberbriefs/news/blogs/vikram/{id}", tags=["Vikram Blogs"])
+@app.put("/news/blogs/vikram/{id}", tags=["Vikram Blogs"])
 def update_vikram_blog(
     id: int,
     headline: Optional[str] = Form(None),
@@ -1694,7 +1694,7 @@ def update_vikram_blog(
     }
 
 
-@app.delete("/cyberbriefs/news/blogs/vikram/{id}", tags=["Vikram Blogs"])
+@app.delete("/news/blogs/vikram/{id}", tags=["Vikram Blogs"])
 def delete_vikram_blog(id: int):
     conn = get_conn()
     cur = conn.cursor()
@@ -1714,7 +1714,7 @@ def delete_vikram_blog(id: int):
 ###Y2AI NEWSLETTER ENDPOINTS###
 from pydantic import BaseModel
 
-@app.post("/cyberbriefs/newsletter/y2ai", tags=["Y2AI Newsletter"])
+@app.post("/newsletter/y2ai", tags=["Y2AI Newsletter"])
 def create_y2ai_newsletter(
     headline: str = Form(...),
     body: str = Form(...),
@@ -1803,7 +1803,7 @@ def create_y2ai_newsletter(
 
 
 
-@app.get("/cyberbriefs/newsletter/y2ai", tags=["Y2AI Newsletter"])
+@app.get("/newsletter/y2ai", tags=["Y2AI Newsletter"])
 def list_y2ai_newsletters():
     conn = get_conn()
     cur = conn.cursor()
@@ -1832,7 +1832,7 @@ def list_y2ai_newsletters():
 
 
 
-@app.get("/cyberbriefs/newsletter/y2ai/{newsletter_id}", tags=["Y2AI Newsletter"])
+@app.get("/newsletter/y2ai/{newsletter_id}", tags=["Y2AI Newsletter"])
 def get_y2ai_newsletter(newsletter_id: int):
     conn = get_conn()
     cur = conn.cursor()
@@ -1863,7 +1863,7 @@ def get_y2ai_newsletter(newsletter_id: int):
     "created_at": row["created_at"],
 }
 
-@app.put("/cyberbriefs/newsletter/y2ai/{id}", tags=["Y2AI Newsletter"])
+@app.put("/newsletter/y2ai/{id}", tags=["Y2AI Newsletter"])
 def update_y2ai_newsletter(
     id: int,
     headline: str | None = Form(None),
@@ -1966,7 +1966,7 @@ def update_y2ai_newsletter(
         "id": id,
     }
 
-@app.delete("/cyberbriefs/newsletter/y2ai/{id}", tags=["Y2AI Newsletter"])
+@app.delete("/newsletter/y2ai/{id}", tags=["Y2AI Newsletter"])
 def delete_y2ai_newsletter(id: int):
     conn = get_conn()
     cur = conn.cursor()
@@ -2067,7 +2067,7 @@ def get_current_admin(token: str = Depends(oauth2_scheme)) -> dict:
     return dict(admin)
 
 
-@app.post("/cyberbriefs/auth/signup", tags=["Auth"])
+@app.post("/auth/signup", tags=["Auth"])
 def admin_signup(email: str = Form(...), password: str = Form(...)):
     # 🔒 Validate password strength FIRST
     validate_password(password)
@@ -2096,7 +2096,7 @@ def admin_signup(email: str = Form(...), password: str = Form(...)):
     return {"status": "success", "message": "Admin registered successfully"}
 
 
-@app.post("/cyberbriefs/auth/login", tags=["Auth"])
+@app.post("/auth/login", tags=["Auth"])
 def admin_login(email: str = Form(...), password: str = Form(...)):
     conn = get_conn()
     cur = conn.cursor()
